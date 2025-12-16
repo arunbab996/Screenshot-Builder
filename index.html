@@ -2,58 +2,91 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Screenshot Beautifier (v8 – Correct)</title>
+  <title>Screenshot Beautifier</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-<div class="layout">
+<div class="app">
 
+  <!-- PREVIEW -->
   <div class="preview">
-    <label class="dropzone">
+    <label class="dropzone" id="dropzone">
       <input type="file" id="upload" accept="image/*" />
       <p>
-        Paste screenshot<br>
+        Paste your screenshot<br>
         <span>Cmd / Ctrl + V</span><br>
         or click to upload
       </p>
     </label>
-
     <canvas id="canvas"></canvas>
   </div>
 
-  <div class="controls">
-    <h3>Controls</h3>
+  <!-- FLOATING ISLAND PANEL -->
+  <div class="panel">
 
-    <label>
-      Proportions
+    <div class="row">
+      <span>Proportions</span>
       <input type="range" id="proportion" min="0" max="2" step="1" value="0">
-      <small>Auto · Square · Landscape</small>
-    </label>
+      <div class="hint">Auto · Square · Landscape</div>
+    </div>
 
-    <label>
-      Browser theme
-      <select id="browserTheme">
-        <option>None</option>
-        <option>Light</option>
-        <option>Dark</option>
-      </select>
-    </label>
+    <div class="row">
+      <span>Browser Theme</span>
+      <div class="dropdown" data-key="browserTheme"></div>
+    </div>
 
-    <label>
-      Canvas corner rounding
+    <div class="row">
+      <span>Padding</span>
+      <div class="dropdown" data-key="padding"></div>
+    </div>
+
+    <div class="row">
+      <span>Background</span>
+      <div class="colors">
+        <button data-color="#ffd6c9"></button>
+        <button data-color="#d9f99d"></button>
+        <button data-color="#cffafe"></button>
+        <button data-color="#bfdbfe"></button>
+        <button data-color="#fed7aa"></button>
+        <button data-color="#fbcfe8"></button>
+        <button data-color="#9ca3af"></button>
+        <button data-color="#fb7185"></button>
+        <button data-color="#5eead4"></button>
+        <button data-color="#c4b5fd"></button>
+        <button data-color="#ffffff" class="active"></button>
+        <button data-color="#000000"></button>
+        <button class="rainbow">
+          <input type="color" id="bgPicker">
+        </button>
+      </div>
+    </div>
+
+    <div class="row">
+      <span>Canvas corner rounding</span>
       <input type="range" id="outerRadius" min="0" max="40" value="24">
-    </label>
+    </div>
 
-    <label>
-      Screenshot corner rounding
+    <div class="row">
+      <span>Screenshot corner rounding</span>
       <input type="range" id="imageRadius" min="0" max="40" value="24">
-    </label>
+    </div>
 
-    <label>
-      Noise
-      <input type="checkbox" id="noise">
-    </label>
+    <div class="row">
+      <span>Shadows</span>
+      <div class="dropdown" data-key="shadows"></div>
+    </div>
+
+    <div class="row">
+      <span>Noise</span>
+      <input type="checkbox" id="noiseToggle">
+    </div>
+
+    <div class="actions">
+      <button id="copy">Copy</button>
+      <button id="save">Save</button>
+    </div>
+
   </div>
 
 </div>
