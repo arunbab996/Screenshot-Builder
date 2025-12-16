@@ -8,14 +8,12 @@
 <body>
 
 <div class="app">
-
   <div class="preview">
     <label class="dropzone" id="dropzone">
       <input type="file" id="upload" accept="image/*" />
       <p>
         Paste your screenshot<br>
-        <span>Cmd / Ctrl + V</span><br>
-        or click to upload
+        <span>Cmd / Ctrl + V</span>
       </p>
     </label>
     <canvas id="canvas"></canvas>
@@ -23,62 +21,15 @@
 
   <div class="panel">
     <div class="row">
-      <span>Proportions</span>
-      <input type="range" id="proportion" min="0" max="2" step="1" value="0">
-      <div class="hint">Auto · Square · Landscape</div>
-    </div>
-
-    <div class="row">
-      <span>Browser Theme</span>
-      <div class="dropdown" data-key="browserTheme"></div>
-    </div>
-
-    <div class="row">
-      <span>Padding</span>
-      <div class="dropdown" data-key="padding"></div>
-    </div>
-
-    <div class="row">
-      <span>Background</span>
-      <div class="colors">
-        <button data-color="#ffd6e8"></button>
-        <button data-color="#fce7f3"></button>
-        <button data-color="#fbcfe8"></button>
-        <button data-color="#fde68a"></button>
-        <button data-color="#bbf7d0"></button>
-        <button data-color="#ffffff" class="active"></button>
-        <button class="rainbow">
-          <input type="color" id="bgPicker">
-        </button>
-      </div>
-    </div>
-
-    <div class="row">
-      <span>Canvas corner rounding</span>
-      <input type="range" id="outerRadius" min="0" max="40" value="24">
-    </div>
-
-    <div class="row">
       <span>Screenshot corner rounding</span>
       <input type="range" id="imageRadius" min="0" max="40" value="24">
-    </div>
-
-    <div class="row">
-      <span>Shadows</span>
-      <div class="dropdown" data-key="shadows"></div>
     </div>
 
     <div class="row">
       <span>Noise</span>
       <input type="checkbox" id="noiseToggle">
     </div>
-
-    <div class="actions">
-      <button id="copy">Copy</button>
-      <button id="save">Save</button>
-    </div>
   </div>
-
 </div>
 
 <script src="script.js"></script>
