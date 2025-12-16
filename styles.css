@@ -6,22 +6,26 @@
 body {
   margin: 0;
   height: 100vh;
-  background: #12050c;
+  background: radial-gradient(circle at center, #1a0b12, #080306);
   color: white;
+  overflow: hidden;
 }
 
 .app {
-  display: flex;
+  position: relative;
   height: 100%;
 }
 
-/* Preview */
+/* PREVIEW */
 .preview {
-  flex: 1;
+  position: absolute;
+  left: 0;
+  right: 420px;
+  top: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
 }
 
 canvas {
@@ -29,19 +33,17 @@ canvas {
   max-height: 85%;
 }
 
-/* Dropzone */
+/* DROPZONE */
 .dropzone {
   position: absolute;
   border: 1px dashed rgba(255,255,255,0.3);
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 26px 36px;
   cursor: pointer;
   text-align: center;
 }
 
-.dropzone input {
-  display: none;
-}
+.dropzone input { display: none; }
 
 .dropzone p {
   margin: 0;
@@ -54,37 +56,81 @@ canvas {
   opacity: 0.6;
 }
 
-/* Panel */
+/* FLOATING PANEL */
 .panel {
-  width: 300px;
+  position: absolute;
+  right: 80px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 320px;
   padding: 22px;
-  background: linear-gradient(180deg, #c2185b, #9d174d);
-  border-radius: 24px 0 0 24px;
-  box-shadow: -10px 0 40px rgba(0,0,0,0.5),
-              0 0 40px rgba(255,20,147,0.25);
+
+  background: linear-gradient(
+    180deg,
+    rgba(194,24,91,0.92),
+    rgba(157,23,77,0.92)
+  );
+
+  backdrop-filter: blur(24px) saturate(140%);
+  border-radius: 28px;
+
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.12),
+    0 30px 80px rgba(0,0,0,0.55),
+    0 0 60px rgba(255,20,147,0.45);
 }
 
-.panel h3 {
-  margin-top: 0;
-  margin-bottom: 18px;
-  font-size: 16px;
-}
-
-.control {
-  margin-bottom: 16px;
+.row {
+  margin-bottom: 14px;
   font-size: 13px;
 }
 
-.control span {
+.row span {
   display: block;
   margin-bottom: 6px;
   opacity: 0.9;
 }
 
-input[type="range"] {
-  width: 100%;
+/* DROPDOWN */
+.dropdown {
+  position: relative;
 }
 
+.dropdown-trigger {
+  background: rgba(255,255,255,0.9);
+  color: #2a0a16;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  background: rgba(30,30,30,0.95);
+  border-radius: 10px;
+  padding: 6px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  z-index: 20;
+}
+
+.dropdown-menu div {
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.dropdown-menu div:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.dropdown-menu .active {
+  background: #2563eb;
+}
+
+/* COLORS */
 .colors {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -99,14 +145,13 @@ input[type="range"] {
   cursor: pointer;
 }
 
-.colors button.active {
+.colors .active {
   outline: 2px solid white;
 }
 
 .colors .rainbow {
   background: linear-gradient(
-    45deg,
-    red, orange, yellow, green, cyan, blue, violet
+    45deg, red, orange, yellow, green, cyan, blue, violet
   );
   position: relative;
 }
@@ -115,13 +160,13 @@ input[type="range"] {
   position: absolute;
   inset: 0;
   opacity: 0;
-  cursor: pointer;
 }
 
+/* ACTIONS */
 .actions {
   display: flex;
   gap: 10px;
-  margin-top: 20px;
+  margin-top: 18px;
 }
 
 .actions button {
@@ -129,16 +174,30 @@ input[type="range"] {
   padding: 10px;
   border-radius: 12px;
   border: none;
-  cursor: pointer;
   font-weight: 600;
+  cursor: pointer;
 }
 
 #copy {
   background: #fbcfe8;
-  color: #12050c;
+  color: #2a0a16;
 }
 
 #save {
   background: #f472b6;
-  color: #12050c;
+  color: #2a0a16;
+}
+
+.footer {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.footer button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
 }
