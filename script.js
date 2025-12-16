@@ -8,7 +8,7 @@ const shadowStrengthEl = document.getElementById("shadowStrength");
 
 let image = null;
 
-// Offscreen canvas for true image rounding
+// Offscreen canvas for TRUE image rounding
 const maskCanvas = document.createElement("canvas");
 const maskCtx = maskCanvas.getContext("2d");
 
@@ -53,44 +53,46 @@ function render() {
   ctx.clearRect(0, 0, cssWidth, cssHeight);
 
   // Background
-  ctx.fillStyle = "#ffffff";
+  ctx.fillStyle = "#d9f99d";
   ctx.fillRect(0, 0, cssWidth, cssHeight);
 
   const x = (cssWidth - image.width) / 2;
   const y = (cssHeight - image.height) / 2;
 
   /* -----------------------------
-     1️⃣ SHADOW FROM GEOMETRY
-     ----------------------------- */
-  if (shadow > 0) {
-    ctx.save();
-    ctx.shadowColor = "rgba(0,0,0,0.35)";
-    ctx.shadowBlur = shadow;
-    ctx.shadowOffsetY = shadow * 0.5;
-
-    roundRect(ctx, x, y, image.width, image.height, radius);
-    ctx.fillStyle = "rgba(0,0,0,0.01)"; // must be non-zero alpha
-    ctx.fill();
-    ctx.restore();
-  }
-
-  /* -----------------------------
-     2️⃣ TRUE IMAGE ROUNDING
+     1️⃣ TRUE IMAGE ROUNDING
      ----------------------------- */
   maskCanvas.width = image.width;
   maskCanvas.height = image.height;
 
-  maskCtx.clearRect(0, 0, maskCanvas.width, maskCanvas.height);
+  maskCtx.clearRect(0, 0, image.width, image.height);
   maskCtx.save();
   roundRect(maskCtx, 0, 0, image.width, image.height, radius);
   maskCtx.clip();
   maskCtx.drawImage(image, 0, 0);
   maskCtx.restore();
 
+  // Draw image FIRST
   ctx.drawImage(maskCanvas, x, y);
+
+  /* -----------------------------
+     2️⃣ SHADOW BEHIND IMAGE (KEY FIX)
+     ----------------------------- */
+  if (shadow > 0) {
+    ctx.save();
+    ctx.globalCompositeOperation = "destination-over";
+    ctx.shadowColor = "rgba(0,0,0,0.35)";
+    ctx.shadowBlur = shadow;
+    ctx.shadowOffsetY = shadow * 0.5;
+
+    roundRect(ctx, x, y, image.width, image.height, radius);
+    ctx.fillStyle = "rgba(0,0,0,0.01)";
+    ctx.fill();
+
+    ctx.restore();
+  }
 }
 
-/* Utility */
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
   ctx.moveTo(x + r, y);
