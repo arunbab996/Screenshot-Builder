@@ -1,23 +1,27 @@
 * {
   box-sizing: border-box;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 body {
   margin: 0;
   height: 100vh;
   overflow: hidden;
-  color: white;
+  color: #e5e7eb;
+  background: #020617;
 }
 
+/* Subtle ambient background */
 .background {
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at top right, #9d174d, #020617 65%);
-  filter: blur(50px);
+  background:
+    radial-gradient(600px at 70% 30%, rgba(168,85,247,0.08), transparent 60%),
+    radial-gradient(500px at 20% 80%, rgba(236,72,153,0.06), transparent 60%);
   z-index: -1;
 }
 
+/* Dropzone */
 .dropzone {
   position: absolute;
   top: 50%;
@@ -25,9 +29,25 @@ body {
   transform: translate(-50%, -50%);
   border: 1px dashed rgba(255,255,255,0.25);
   border-radius: 14px;
-  padding: 30px 40px;
+  padding: 28px 36px;
   text-align: center;
-  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  transition: border 0.2s, background 0.2s;
+}
+
+.dropzone:hover {
+  border-color: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.02);
+}
+
+.dropzone input {
+  display: none;
+}
+
+.dropzone p {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(255,255,255,0.75);
 }
 
 .dropzone span {
@@ -35,10 +55,7 @@ body {
   opacity: 0.6;
 }
 
-.dropzone input {
-  display: none;
-}
-
+/* Canvas */
 .canvas-wrap {
   position: absolute;
   inset: 0;
@@ -53,21 +70,27 @@ canvas {
   max-height: 80%;
 }
 
+/* Panel */
 .panel {
   position: absolute;
-  right: 30px;
+  right: 32px;
   top: 50%;
   transform: translateY(-50%);
   width: 280px;
   padding: 20px;
-  background: linear-gradient(180deg, #b91c5c, #831843);
-  border-radius: 20px;
-  box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.06),
+    rgba(255,255,255,0.02)
+  );
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
 }
 
 .panel h3 {
-  margin-top: 0;
-  margin-bottom: 15px;
+  margin: 0 0 16px 0;
+  font-size: 15px;
 }
 
 .row {
@@ -78,19 +101,21 @@ canvas {
 .row label {
   display: block;
   margin-bottom: 6px;
-  opacity: 0.9;
+  opacity: 0.85;
 }
 
 select {
   width: 100%;
   padding: 6px 8px;
   border-radius: 8px;
-  border: none;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.04);
+  color: white;
 }
 
 .colors {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 6px;
 }
 
@@ -110,7 +135,7 @@ select {
 .actions {
   display: flex;
   gap: 10px;
-  margin-top: 15px;
+  margin-top: 16px;
 }
 
 .actions button {
@@ -122,16 +147,7 @@ select {
 }
 
 .primary {
-  background: #f472b6;
+  background: white;
   color: #020617;
   font-weight: 600;
-}
-
-.reset {
-  margin-top: 12px;
-  width: 100%;
-  background: transparent;
-  color: rgba(255,255,255,0.7);
-  border: none;
-  cursor: pointer;
 }
