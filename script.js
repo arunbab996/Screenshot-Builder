@@ -2,18 +2,66 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 const upload = document.getElementById("upload");
+const dropzone = document.getElementById("dropzone");
+
 const proportionEl = document.getElementById("proportion");
-const browserThemeEl = document.getElementById("browserTheme");
 const outerRadiusEl = document.getElementById("outerRadius");
 const imageRadiusEl = document.getElementById("imageRadius");
-const noiseEl = document.getElementById("noise");
+const noiseToggle = document.getElementById("noiseToggle");
+const bgPicker = document.getElementById("bgPicker");
+
+const saveBtn = document.getElementById("save");
+const copyBtn = document.getElementById("copy");
+
+const OPTIONS = {
+  browserTheme: ["None", "Light", "Dark"],
+  padding: ["None", "Small", "Medium", "Large"],
+  shadows: ["None", "Little", "Medium", "A lot"]
+};
+
+let state = {
+  browserTheme: "None",
+  padding: "Large",
+  shadows: "Little"
+};
 
 let image = null;
-const BG_COLOR = "#ffffff";
+let bgColor = "#ffffff";
+
+/* ---------- DROPDOWNS ---------- */
+document.querySelectorAll(".dropdown").forEach(el => {
+  const key = el.dataset.key;
+  const trigger = document.createElement("div");
+  trigger.className = "dropdown-trigger";
+  trigger.textContent = state[key];
+  el.appendChild(trigger);
+
+  trigger.onclick = () => {
+    document.querySelectorAll(".dropdown-menu").forEach(m => m.remove());
+    const menu = document.createElement("div");
+    menu.className = "dropdown-menu";
+
+    OPTIONS[key].forEach(opt => {
+      const item = document.createElement("div");
+      item.textContent = opt;
+      if (opt === state[key]) item.classList.add("active");
+
+      item.onclick = () => {
+        state[key] = opt;
+        trigger.textContent = opt;
+        render();
+        menu.remove();
+      };
+
+      menu.appendChild(item);
+    });
+
+    el.appendChild(menu);
+  };
+});
 
 /* ---------- IMAGE LOAD ---------- */
 upload.addEventListener("change", e => loadImage(e.target.files[0]));
-
 window.addEventListener("paste", e => {
   const item = [...e.clipboardData.items].find(i => i.type.includes("image"));
   if (item) loadImage(item.getAsFile());
@@ -24,32 +72,50 @@ function loadImage(file) {
   const img = new Image();
   img.onload = () => {
     image = img;
-    document.querySelector(".dropzone").style.display = "none";
+    dropzone.style.display = "none";
     render();
   };
   img.src = URL.createObjectURL(file);
 }
 
+/* ---------- COLORS ---------- */
+document.querySelectorAll(".colors button[data-color]").forEach(btn => {
+  btn.style.background = btn.dataset.color;
+  btn.onclick = () => {
+    bgColor = btn.dataset.color;
+    document.querySelectorAll(".colors button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    render();
+  };
+});
+
+bgPicker.oninput = e => {
+  bgColor = e.target.value;
+  render();
+};
+
 /* ---------- CONTROLS ---------- */
 [
   proportionEl,
-  browserThemeEl,
   outerRadiusEl,
   imageRadiusEl,
-  noiseEl
+  noiseToggle
 ].forEach(el => el.addEventListener("input", render));
 
-/* ---------- RENDER (CORRECT PIPELINE) ---------- */
+/* ---------- RENDER (CORRECT & COMPLETE) ---------- */
 function render() {
   if (!image) return;
 
-  const chromeHeight =
-    browserThemeEl.value === "None" ? 0 : 36;
+  const paddingMap = { None: 0, Small: 40, Medium: 80, Large: 140 };
+  const shadowMap = { None: 0, Little: 20, Medium: 40, "A lot": 70 };
 
-  let w = image.width + 240;
-  let h = image.height + 240 + chromeHeight;
+  const padding = paddingMap[state.padding];
+  const shadow = shadowMap[state.shadows];
+  const chromeH = state.browserTheme === "None" ? 0 : 36;
 
-  /* PROPORTIONS */
+  let w = image.width + padding * 2;
+  let h = image.height + padding * 2 + chromeH;
+
   if (proportionEl.value == 1) {
     const m = Math.max(w, h);
     w = h = m;
@@ -61,61 +127,66 @@ function render() {
   canvas.height = h;
 
   ctx.clearRect(0, 0, w, h);
+  ctx.save();
 
   /* CANVAS ROUNDING */
-  ctx.save();
   roundRect(ctx, 0, 0, w, h, +outerRadiusEl.value);
   ctx.clip();
 
   /* BACKGROUND */
-  ctx.fillStyle = BG_COLOR;
+  ctx.fillStyle = bgColor;
   ctx.fillRect(0, 0, w, h);
 
-  /* IMAGE CONTAINER */
   const imgX = (w - image.width) / 2;
-  const imgY = (h - image.height - chromeHeight) / 2;
+  const imgY = (h - image.height - chromeH) / 2;
 
-  /* SHADOW */
-  ctx.save();
-  ctx.shadowColor = "rgba(0,0,0,0.45)";
-  ctx.shadowBlur = 40;
-  ctx.shadowOffsetY = 20;
-  ctx.fillRect(imgX, imgY, image.width, image.height + chromeHeight);
-  ctx.restore();
+  /* SHADOW (BEHIND IMAGE GROUP) */
+  if (shadow > 0) {
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,0.45)";
+    ctx.shadowBlur = shadow;
+    ctx.shadowOffsetY = shadow / 2;
+    ctx.fillRect(imgX, imgY, image.width, image.height + chromeH);
+    ctx.restore();
+  }
 
-  /* SCREENSHOT ROUNDING */
+  /* IMAGE GROUP CLIP */
   ctx.save();
-  roundRect(
-    ctx,
-    imgX,
-    imgY,
-    image.width,
-    image.height + chromeHeight,
-    +imageRadiusEl.value
-  );
+  roundRect(ctx, imgX, imgY, image.width, image.height + chromeH, +imageRadiusEl.value);
   ctx.clip();
 
   /* BROWSER BAR (ON IMAGE) */
-  if (chromeHeight > 0) {
-    ctx.fillStyle =
-      browserThemeEl.value === "Dark" ? "#1f1f1f" : "#f3f4f6";
-    ctx.fillRect(imgX, imgY, image.width, chromeHeight);
+  if (chromeH > 0) {
+    ctx.fillStyle = state.browserTheme === "Dark" ? "#1f1f1f" : "#f3f4f6";
+    ctx.fillRect(imgX, imgY, image.width, chromeH);
 
     ["#ff5f56", "#ffbd2e", "#27c93f"].forEach((c, i) => {
       ctx.fillStyle = c;
       ctx.beginPath();
-      ctx.arc(imgX + 18 + i * 16, imgY + chromeHeight / 2, 6, 0, Math.PI * 2);
+      ctx.arc(imgX + 18 + i * 16, imgY + chromeH / 2, 6, 0, Math.PI * 2);
       ctx.fill();
     });
   }
 
   /* IMAGE */
-  ctx.drawImage(image, imgX, imgY + chromeHeight);
+  ctx.drawImage(image, imgX, imgY + chromeH);
 
-  ctx.restore(); // screenshot clip
+  ctx.restore(); // image clip
 
   /* NOISE */
-  if (noiseEl.checked) drawNoise(w, h);
+  if (noiseToggle.checked) {
+    ctx.save();
+    ctx.globalCompositeOperation = "overlay";
+    ctx.globalAlpha = 0.18;
+    for (let i = 0; i < w * h * 0.0015; i++) {
+      const x = Math.random() * w;
+      const y = Math.random() * h;
+      const v = Math.random() * 255;
+      ctx.fillStyle = `rgb(${v},${v},${v})`;
+      ctx.fillRect(x, y, 1, 1);
+    }
+    ctx.restore();
+  }
 
   ctx.restore(); // canvas clip
 }
@@ -131,18 +202,15 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-function drawNoise(w, h) {
-  ctx.save();
-  ctx.globalCompositeOperation = "overlay";
-  ctx.globalAlpha = 0.18;
+/* ---------- EXPORT ---------- */
+saveBtn.onclick = () => {
+  const a = document.createElement("a");
+  a.download = "screenshot.png";
+  a.href = canvas.toDataURL();
+  a.click();
+};
 
-  for (let i = 0; i < w * h * 0.0015; i++) {
-    const x = Math.random() * w;
-    const y = Math.random() * h;
-    const v = Math.random() * 255;
-    ctx.fillStyle = `rgb(${v},${v},${v})`;
-    ctx.fillRect(x, y, 1, 1);
-  }
-
-  ctx.restore();
-}
+copyBtn.onclick = async () => {
+  const blob = await new Promise(r => canvas.toBlob(r));
+  await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+};
