@@ -49,41 +49,44 @@ function render() {
   ctx.clearRect(0, 0, cssWidth, cssHeight);
 
   // 1. Draw Background
-  ctx.fillStyle = "#d9f99d";
+  ctx.fillStyle = "#d9f99d"; 
   ctx.fillRect(0, 0, cssWidth, cssHeight);
 
   const x = (cssWidth - image.width) / 2;
   const y = (cssHeight - image.height) / 2;
 
   /* -----------------------------
-     2. DRAW SHADOW (FIRST)
+     2. DRAW SHADOW (With Bleed Fix)
      ----------------------------- */
   if (shadow > 0) {
     ctx.save();
-    ctx.shadowColor = "rgba(0,0,0,0.35)";
+    ctx.shadowColor = "rgba(0,0,0,0.4)";
     ctx.shadowBlur = shadow;
     ctx.shadowOffsetY = shadow * 0.5;
     
-    // We draw a filled rect here to cast the shadow.
-    // The color doesn't matter much as the image will cover it,
-    // but matching the background or white prevents dark halos.
-    ctx.fillStyle = "white"; 
-    
-    // Use the exact same rounded path for the shadow
-    roundRect(ctx, x, y, image.width, image.height, radius);
+    // Use black fill for the shadow caster to avoid white edges
+    ctx.fillStyle = "rgba(0,0,0,1)"; 
+
+    // INSET FIX: Shrink the shadow caster by 4px so it stays hidden behind the image
+    const shrink = 4; 
+    roundRect(
+      ctx, 
+      x + shrink, 
+      y + shrink, 
+      image.width - (shrink * 2), 
+      image.height - (shrink * 2), 
+      radius
+    );
     ctx.fill();
     ctx.restore();
   }
 
   /* -----------------------------
-     3. DRAW IMAGE (SECOND - ON TOP)
+     3. DRAW IMAGE
      ----------------------------- */
   ctx.save();
-  // Create the clipping path again
   roundRect(ctx, x, y, image.width, image.height, radius);
   ctx.clip();
-  
-  // Draw the image inside the clip
   ctx.drawImage(image, x, y, image.width, image.height);
   ctx.restore();
 }
