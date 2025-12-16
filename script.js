@@ -1,20 +1,15 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-const off = document.createElement("canvas");
-const offCtx = off.getContext("2d");
+ctx.imageSmoothingEnabled = true;
+ctx.imageSmoothingQuality = "high";
 
 const upload = document.getElementById("upload");
 const dropzone = document.getElementById("dropzone");
-
-const proportionEl = document.getElementById("proportion");
-const outerRadiusEl = document.getElementById("outerRadius");
 const imageRadiusEl = document.getElementById("imageRadius");
 const noiseToggle = document.getElementById("noiseToggle");
-const bgPicker = document.getElementById("bgPicker");
 
 let image = null;
-let bgColor = "#ffffff";
 
 upload.addEventListener("change", e => loadImage(e.target.files[0]));
 window.addEventListener("paste", e => {
@@ -32,71 +27,67 @@ function loadImage(file) {
   img.src = URL.createObjectURL(file);
 }
 
-[proportionEl, outerRadiusEl, imageRadiusEl, noiseToggle].forEach(el =>
-  el.addEventListener("input", render)
-);
+imageRadiusEl.addEventListener("input", render);
+noiseToggle.addEventListener("input", render);
 
 function render() {
   if (!image) return;
 
-  const padding = 140;
-  const chromeH = 0;
+  const padding = 120;
+  const inset = 1; // 🔥 THE FIX
 
-  let w = image.width + padding * 2;
-  let h = image.height + padding * 2;
+  const w = image.width + padding * 2;
+  const h = image.height + padding * 2;
 
   canvas.width = w;
   canvas.height = h;
 
   ctx.clearRect(0, 0, w, h);
 
-  /* background */
-  ctx.save();
-  roundRect(ctx, 0, 0, w, h, +outerRadiusEl.value);
-  ctx.clip();
-  ctx.fillStyle = bgColor;
+  // background
+  ctx.fillStyle = "#ffd6e8";
   ctx.fillRect(0, 0, w, h);
-  ctx.restore();
 
-  /* OFFSCREEN CARD */
-  off.width = image.width;
-  off.height = image.height;
+  const x = (w - image.width) / 2;
+  const y = (h - image.height) / 2;
 
-  offCtx.clearRect(0, 0, off.width, off.height);
-  offCtx.save();
-  roundRect(offCtx, 0, 0, off.width, off.height, +imageRadiusEl.value);
-  offCtx.clip();
-  offCtx.drawImage(image, 0, 0);
-  offCtx.restore();
-
-  /* SHADOW */
+  // SHADOW (unchanged)
   ctx.save();
   ctx.shadowColor = "rgba(0,0,0,0.35)";
   ctx.shadowBlur = 30;
-  ctx.shadowOffsetY = 15;
-  ctx.drawImage(
-    off,
-    (w - off.width) / 2,
-    (h - off.height) / 2
-  );
+  ctx.shadowOffsetY = 12;
   ctx.restore();
 
-  /* IMAGE */
+  // 🔥 ROUNDED CLIP — REDUCED BY 2px
+  ctx.save();
+  roundRect(
+    ctx,
+    x + inset,
+    y + inset,
+    image.width - inset * 2,
+    image.height - inset * 2,
+    +imageRadiusEl.value
+  );
+  ctx.clip();
+
+  // 🔥 IMAGE DRAWN 1px INSIDE CLIP
   ctx.drawImage(
-    off,
-    (w - off.width) / 2,
-    (h - off.height) / 2
+    image,
+    x + inset,
+    y + inset,
+    image.width - inset * 2,
+    image.height - inset * 2
   );
 
-  /* NOISE */
+  ctx.restore();
+
   if (noiseToggle.checked) drawNoise(w, h);
 }
 
 function drawNoise(w, h) {
   ctx.save();
   ctx.globalCompositeOperation = "soft-light";
-  ctx.globalAlpha = 0.25;
-
+  ctx.globalAlpha = 0.22;
   for (let i = 0; i < w * h * 0.002; i++) {
     const x = Math.random() * w;
     const y = Math.random() * h;
