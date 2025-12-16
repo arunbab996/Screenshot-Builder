@@ -9,7 +9,7 @@
 
 <div class="app">
 
-  <!-- PREVIEW AREA -->
+  <!-- PREVIEW -->
   <div class="preview">
     <label class="dropzone" id="dropzone">
       <input type="file" id="upload" accept="image/*" />
@@ -22,12 +22,13 @@
     <canvas id="canvas"></canvas>
   </div>
 
-  <!-- FLOATING CONTROL ISLAND -->
+  <!-- FLOATING PANEL -->
   <div class="panel">
 
     <div class="row">
       <span>Proportions</span>
-      <div class="dropdown" data-key="proportions"></div>
+      <input type="range" id="proportion" min="0" max="2" step="1" value="0">
+      <div class="hint">Auto · Square · Landscape</div>
     </div>
 
     <div class="row">
@@ -63,18 +64,13 @@
     </div>
 
     <div class="row">
-      <span>Rounding of the corners</span>
-      <div class="dropdown" data-key="rounding"></div>
+      <span>Canvas corner rounding</span>
+      <input type="range" id="outerRadius" min="0" max="40" value="24">
     </div>
 
     <div class="row">
-      <span>Rounding of the screenshot corners</span>
-      <div class="dropdown" data-key="screenshotRounding"></div>
-    </div>
-
-    <div class="row">
-      <span>Screenshot position</span>
-      <div class="dropdown" data-key="position"></div>
+      <span>Screenshot corner rounding</span>
+      <input type="range" id="imageRadius" min="0" max="40" value="24">
     </div>
 
     <div class="row">
@@ -90,11 +86,6 @@
     <div class="actions">
       <button id="copy">Copy</button>
       <button id="save">Save</button>
-    </div>
-
-    <div class="footer">
-      <button id="reset">Reset</button>
-      <p>Use <kbd>Cmd/Ctrl+C</kbd> to copy<br><kbd>Cmd/Ctrl+S</kbd> to save</p>
     </div>
 
   </div>
