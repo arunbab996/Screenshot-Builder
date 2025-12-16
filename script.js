@@ -4,22 +4,18 @@ const ctx = canvas.getContext("2d");
 const upload = document.getElementById("upload");
 const dropzone = document.getElementById("dropzone");
 
-const controls = {
-  proportion: document.getElementById("proportion"),
-  padding: document.getElementById("padding"),
-  imageRadius: document.getElementById("imageRadius"),
-  position: document.getElementById("position"),
-  shadow: document.getElementById("shadow"),
-  noise: document.getElementById("noise"),
-  bgPicker: document.getElementById("bgPicker")
-};
+const paddingEl = document.getElementById("padding");
+const radiusEl = document.getElementById("radius");
+const shadowEl = document.getElementById("shadow");
+const noiseEl = document.getElementById("noise");
+const bgPicker = document.getElementById("bgPicker");
 
+const colorButtons = document.querySelectorAll(".colors button[data-color]");
 const saveBtn = document.getElementById("save");
 const copyBtn = document.getElementById("copy");
-const colorButtons = document.querySelectorAll(".colors button[data-color]");
 
 let image = null;
-let bgColor = "#020617";
+let bgColor = "#ffffff";
 
 /* Upload */
 upload.addEventListener("change", e => loadImage(e.target.files[0]));
@@ -30,22 +26,26 @@ window.addEventListener("paste", e => {
   if (item) loadImage(item.getAsFile());
 });
 
-/* BG Colors */
+/* BG swatches */
 colorButtons.forEach(btn => {
   btn.style.background = btn.dataset.color;
   btn.onclick = () => {
     bgColor = btn.dataset.color;
+    colorButtons.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
     render();
   };
 });
 
-controls.bgPicker.addEventListener("input", e => {
+/* Custom color */
+bgPicker.addEventListener("input", e => {
   bgColor = e.target.value;
+  colorButtons.forEach(b => b.classList.remove("active"));
   render();
 });
 
 /* Live updates */
-Object.values(controls).forEach(el =>
+[paddingEl, radiusEl, shadowEl, noiseEl].forEach(el =>
   el.addEventListener("input", render)
 );
 
@@ -63,49 +63,39 @@ function loadImage(file) {
 function render() {
   if (!image) return;
 
-  const padding = +controls.padding.value;
-  let width = image.width + padding * 2;
-  let height = image.height + padding * 2;
+  const padding = +paddingEl.value;
+  const radius = +radiusEl.value;
+  const shadow = +shadowEl.value;
+  const noise = +noiseEl.value;
 
-  if (controls.proportion.value === "1") {
-    width = height = Math.max(width, height);
-  }
-  if (controls.proportion.value === "16/9") {
-    height = width * 9 / 16;
-  }
+  canvas.width = image.width + padding * 2;
+  canvas.height = image.height + padding * 2;
 
-  canvas.width = width;
-  canvas.height = height;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  ctx.clearRect(0, 0, width, height);
+  /* BG */
   ctx.fillStyle = bgColor;
-  ctx.fillRect(0, 0, width, height);
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  applyShadow();
-
-  const y =
-    controls.position.value === "top"
-      ? padding
-      : (height - image.height) / 2;
+  /* Shadow */
+  ctx.save();
+  ctx.shadowColor = "rgba(0,0,0,0.4)";
+  ctx.shadowBlur = shadow;
+  ctx.shadowOffsetY = shadow / 2;
 
   drawRoundedImage(
     ctx,
     image,
-    (width - image.width) / 2,
-    y,
+    padding,
+    padding,
     image.width,
     image.height,
-    +controls.imageRadius.value
+    radius
   );
+  ctx.restore();
 
-  if (+controls.noise.value > 0) drawNoise(+controls.noise.value);
-}
-
-function applyShadow() {
-  const s = +controls.shadow.value;
-  ctx.shadowColor = "rgba(0,0,0,0.35)";
-  ctx.shadowBlur = s;
-  ctx.shadowOffsetY = s / 2;
+  /* Noise overlay */
+  if (noise > 0) drawNoise(noise);
 }
 
 function drawRoundedImage(ctx, img, x, y, w, h, r) {
@@ -123,15 +113,18 @@ function drawRoundedImage(ctx, img, x, y, w, h, r) {
 }
 
 function drawNoise(amount) {
-  const imgData = ctx.createImageData(canvas.width, canvas.height);
-  for (let i = 0; i < imgData.data.length; i += 4) {
-    const v = Math.random() * amount;
-    imgData.data[i] = v;
-    imgData.data[i + 1] = v;
-    imgData.data[i + 2] = v;
-    imgData.data[i + 3] = 20;
+  ctx.save();
+  ctx.globalAlpha = 0.15;
+  for (let i = 0; i < amount * 200; i++) {
+    ctx.fillStyle = `rgba(0,0,0,${Math.random()})`;
+    ctx.fillRect(
+      Math.random() * canvas.width,
+      Math.random() * canvas.height,
+      1,
+      1
+    );
   }
-  ctx.putImageData(imgData, 0, 0);
+  ctx.restore();
 }
 
 saveBtn.onclick = () => {
