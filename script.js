@@ -28,7 +28,7 @@ let state = {
 let image = null;
 let bgColor = "#ffffff";
 
-/* ---------- DROPDOWNS ---------- */
+/* DROPDOWNS */
 document.querySelectorAll(".dropdown").forEach(el => {
   const key = el.dataset.key;
   const trigger = document.createElement("div");
@@ -60,7 +60,7 @@ document.querySelectorAll(".dropdown").forEach(el => {
   };
 });
 
-/* ---------- IMAGE LOAD ---------- */
+/* IMAGE LOAD */
 upload.addEventListener("change", e => loadImage(e.target.files[0]));
 window.addEventListener("paste", e => {
   const item = [...e.clipboardData.items].find(i => i.type.includes("image"));
@@ -78,7 +78,7 @@ function loadImage(file) {
   img.src = URL.createObjectURL(file);
 }
 
-/* ---------- COLORS ---------- */
+/* COLORS */
 document.querySelectorAll(".colors button[data-color]").forEach(btn => {
   btn.style.background = btn.dataset.color;
   btn.onclick = () => {
@@ -94,7 +94,7 @@ bgPicker.oninput = e => {
   render();
 };
 
-/* ---------- CONTROLS ---------- */
+/* CONTROLS */
 [
   proportionEl,
   outerRadiusEl,
@@ -102,7 +102,7 @@ bgPicker.oninput = e => {
   noiseToggle
 ].forEach(el => el.addEventListener("input", render));
 
-/* ---------- RENDER (CORRECT & COMPLETE) ---------- */
+/* RENDER */
 function render() {
   if (!image) return;
 
@@ -140,7 +140,7 @@ function render() {
   const imgX = (w - image.width) / 2;
   const imgY = (h - image.height - chromeH) / 2;
 
-  /* SHADOW (BEHIND IMAGE GROUP) */
+  /* SHADOW */
   if (shadow > 0) {
     ctx.save();
     ctx.shadowColor = "rgba(0,0,0,0.45)";
@@ -150,12 +150,16 @@ function render() {
     ctx.restore();
   }
 
-  /* IMAGE GROUP CLIP */
+  /* IMAGE GROUP */
   ctx.save();
   roundRect(ctx, imgX, imgY, image.width, image.height + chromeH, +imageRadiusEl.value);
   ctx.clip();
 
-  /* BROWSER BAR (ON IMAGE) */
+  /* 🔥 FIX #1: fill container */
+  ctx.fillStyle = state.browserTheme === "Dark" ? "#1f1f1f" : "#f3f4f6";
+  ctx.fillRect(imgX, imgY, image.width, image.height + chromeH);
+
+  /* BROWSER BAR */
   if (chromeH > 0) {
     ctx.fillStyle = state.browserTheme === "Dark" ? "#1f1f1f" : "#f3f4f6";
     ctx.fillRect(imgX, imgY, image.width, chromeH);
@@ -168,10 +172,8 @@ function render() {
     });
   }
 
-  /* IMAGE */
   ctx.drawImage(image, imgX, imgY + chromeH);
-
-  ctx.restore(); // image clip
+  ctx.restore();
 
   /* NOISE */
   if (noiseToggle.checked) {
@@ -188,10 +190,10 @@ function render() {
     ctx.restore();
   }
 
-  ctx.restore(); // canvas clip
+  ctx.restore();
 }
 
-/* ---------- HELPERS ---------- */
+/* HELPERS */
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
   ctx.moveTo(x + r, y);
@@ -202,7 +204,7 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-/* ---------- EXPORT ---------- */
+/* EXPORT */
 saveBtn.onclick = () => {
   const a = document.createElement("a");
   a.download = "screenshot.png";
