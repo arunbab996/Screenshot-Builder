@@ -10,13 +10,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #3a0a1f;
 }
 
 .app {
-  display: flex;
   width: 100%;
   height: 100%;
+  display: flex;
 }
 
 .preview {
