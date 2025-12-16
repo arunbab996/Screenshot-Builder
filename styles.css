@@ -10,23 +10,21 @@ body {
   color: white;
 }
 
-/* Ambient background */
 .background {
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at top right, #831843, #020617 60%);
-  filter: blur(40px);
+  background: radial-gradient(circle at top right, #9d174d, #020617 65%);
+  filter: blur(50px);
   z-index: -1;
 }
 
-/* Dropzone */
 .dropzone {
   position: absolute;
   top: 50%;
-  left: 35%;
+  left: 40%;
   transform: translate(-50%, -50%);
   border: 1px dashed rgba(255,255,255,0.25);
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 30px 40px;
   text-align: center;
   color: rgba(255,255,255,0.6);
@@ -41,17 +39,30 @@ body {
   display: none;
 }
 
-/* Control Panel */
+.canvas-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+
+canvas {
+  max-width: 70%;
+  max-height: 80%;
+}
+
 .panel {
   position: absolute;
   right: 30px;
   top: 50%;
   transform: translateY(-50%);
-  width: 260px;
+  width: 280px;
   padding: 20px;
-  background: linear-gradient(180deg, #9d174d, #831843);
-  border-radius: 16px;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+  background: linear-gradient(180deg, #b91c5c, #831843);
+  border-radius: 20px;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.5);
 }
 
 .panel h3 {
@@ -60,18 +71,21 @@ body {
 }
 
 .row {
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   font-size: 13px;
 }
 
-.row span {
+.row label {
   display: block;
   margin-bottom: 6px;
   opacity: 0.9;
 }
 
-.row input[type="range"] {
+select {
   width: 100%;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: none;
 }
 
 .colors {
@@ -93,32 +107,31 @@ body {
   align-items: center;
 }
 
-.primary {
-  width: 100%;
-  padding: 10px;
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.actions button {
+  flex: 1;
+  padding: 8px;
   border-radius: 10px;
   border: none;
-  background: #f472b6;
-  color: #020617;
-  font-weight: 600;
   cursor: pointer;
 }
 
-.primary:hover {
-  background: #f9a8d4;
+.primary {
+  background: #f472b6;
+  color: #020617;
+  font-weight: 600;
 }
 
-/* Canvas */
-.canvas-wrap {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  pointer-events: none;
-}
-
-canvas {
-  max-width: 70%;
-  max-height: 80%;
+.reset {
+  margin-top: 12px;
+  width: 100%;
+  background: transparent;
+  color: rgba(255,255,255,0.7);
+  border: none;
+  cursor: pointer;
 }
