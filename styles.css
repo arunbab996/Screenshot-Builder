@@ -1,38 +1,71 @@
+* {
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
 body {
   margin: 0;
   height: 100vh;
-  background: #111;
+  background: radial-gradient(circle at center, #12070c, #050204);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: system-ui;
+  color: #3a0a1f;
+}
+
+.app {
+  display: flex;
+  width: 100%;
+  height: 100%;
 }
 
 .preview {
   flex: 1;
   display: flex;
+  align-items: center;
   justify-content: center;
+  position: relative;
 }
 
 canvas {
   max-width: 90%;
-  max-height: 90%;
+  max-height: 85%;
 }
 
 .dropzone {
   position: absolute;
   border: 1px dashed rgba(255,255,255,0.4);
-  border-radius: 12px;
-  padding: 24px 32px;
-  cursor: pointer;
+  border-radius: 14px;
+  padding: 26px 36px;
   color: white;
+  cursor: pointer;
+  text-align: center;
 }
 
 .panel {
-  width: 260px;
-  padding: 20px;
-  margin-right: 40px;
-  background: rgba(255, 200, 220, 0.7);
-  backdrop-filter: blur(30px);
-  border-radius: 24px;
+  width: 300px;
+  margin-right: 60px;
+  padding: 22px;
+  border-radius: 28px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 210, 230, 0.75),
+    rgba(255, 185, 215, 0.65)
+  );
+
+  backdrop-filter: blur(30px) saturate(150%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.6),
+    0 20px 60px rgba(0,0,0,0.4);
+}
+
+.row {
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.row span {
+  display: block;
+  margin-bottom: 8px;
 }
