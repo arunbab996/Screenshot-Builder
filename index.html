@@ -9,15 +9,16 @@
 
   <div class="background"></div>
 
-  <div class="dropzone" id="dropzone">
+  <!-- Clickable Dropzone -->
+  <label class="dropzone" id="dropzone">
+    <input type="file" id="upload" accept="image/*" />
     <p>
       Paste your screenshot<br>
-      <span>(Cmd / Ctrl + V)</span><br>
-      or drag & drop<br>
-      or choose from computer
+      <span>Cmd / Ctrl + V</span><br>
+      or click to upload<br>
+      or drag & drop
     </p>
-    <input type="file" id="upload" accept="image/*" />
-  </div>
+  </label>
 
   <div class="canvas-wrap">
     <canvas id="canvas"></canvas>
@@ -36,15 +37,6 @@
     </div>
 
     <div class="row">
-      <label>Browser Theme</label>
-      <select id="browserTheme">
-        <option value="none">None</option>
-        <option value="light">Light</option>
-        <option value="dark">Dark</option>
-      </select>
-    </div>
-
-    <div class="row">
       <label>Padding</label>
       <select id="paddingPreset">
         <option value="40">Small</option>
@@ -56,29 +48,19 @@
     <div class="row">
       <label>Background</label>
       <div class="colors">
-        <button data-color="#0f172a"></button>
-        <button data-color="#3b0764"></button>
-        <button data-color="#831843"></button>
-        <button data-color="#0c4a6e"></button>
+        <button data-color="#0b1020"></button>
+        <button data-color="#111827"></button>
+        <button data-color="#1f2933"></button>
+        <button data-color="#020617"></button>
         <button data-color="#ffffff"></button>
-        <button data-color="#000000"></button>
       </div>
     </div>
 
     <div class="row">
-      <label>Rounding of the corners</label>
-      <select id="outerRadius">
-        <option value="0">None</option>
-        <option value="20">Medium</option>
-        <option value="40">Large</option>
-      </select>
-    </div>
-
-    <div class="row">
-      <label>Rounding of the screenshot corners</label>
+      <label>Screenshot corners</label>
       <select id="imageRadius">
         <option value="0">None</option>
-        <option value="16">Medium</option>
+        <option value="16" selected>Medium</option>
         <option value="32">Large</option>
       </select>
     </div>
@@ -86,24 +68,24 @@
     <div class="row">
       <label>Screenshot position</label>
       <select id="position">
-        <option value="center">Central</option>
+        <option value="center">Center</option>
         <option value="top">Top</option>
       </select>
     </div>
 
     <div class="row">
-      <label>Shadows</label>
+      <label>Shadow</label>
       <select id="shadowLevel">
         <option value="none">None</option>
-        <option value="little" selected>Little</option>
-        <option value="heavy">Heavy</option>
+        <option value="soft" selected>Soft</option>
+        <option value="strong">Strong</option>
       </select>
     </div>
 
     <div class="row checkbox">
       <label>
         <input type="checkbox" id="noise" />
-        Noise
+        Subtle noise
       </label>
     </div>
 
@@ -111,8 +93,6 @@
       <button id="copy">Copy</button>
       <button id="save" class="primary">Save</button>
     </div>
-
-    <button id="reset" class="reset">Reset</button>
   </div>
 
   <script src="script.js"></script>
