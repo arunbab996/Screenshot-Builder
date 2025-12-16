@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Screenshot Beautifier</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <div class="app">
+    <div class="controls">
+      <h2>Screenshot Beautifier</h2>
+
+      <input type="file" id="upload" accept="image/*" />
+
+      <label>
+        Padding
+        <input type="range" id="padding" min="0" max="200" value="80" />
+      </label>
+
+      <label>
+        Corner Radius
+        <input type="range" id="radius" min="0" max="60" value="24" />
+      </label>
+
+      <label>
+        Background Color
+        <input type="color" id="bgColor" value="#0f172a" />
+      </label>
+
+      <label class="checkbox">
+        <input type="checkbox" id="shadow" checked />
+        Enable Shadow
+      </label>
+
+      <button id="download">Download PNG</button>
+    </div>
+
+    <div class="preview">
+      <canvas id="canvas"></canvas>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
