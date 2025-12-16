@@ -4,7 +4,6 @@ const ctx = canvas.getContext("2d");
 const upload = document.getElementById("upload");
 const dropzone = document.getElementById("dropzone");
 const imageRadiusEl = document.getElementById("imageRadius");
-const noiseToggle = document.getElementById("noiseToggle");
 
 let image = null;
 
@@ -25,18 +24,20 @@ function loadImage(file) {
 }
 
 imageRadiusEl.addEventListener("input", render);
-noiseToggle.addEventListener("input", render);
 
 function render() {
   if (!image) return;
 
-  const padding = 140;
+  const padding = 140;          // outer canvas padding
+  const innerPadding = 12;      // 🔥 THIS IS THE FIX
   const dpr = window.devicePixelRatio || 1;
 
-  const cssWidth = image.width + padding * 2;
-  const cssHeight = image.height + padding * 2;
+  const cardWidth = image.width + innerPadding * 2;
+  const cardHeight = image.height + innerPadding * 2;
 
-  // ✅ DPR-aware canvas
+  const cssWidth = cardWidth + padding * 2;
+  const cssHeight = cardHeight + padding * 2;
+
   canvas.style.width = cssWidth + "px";
   canvas.style.height = cssHeight + "px";
   canvas.width = cssWidth * dpr;
@@ -45,46 +46,38 @@ function render() {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.clearRect(0, 0, cssWidth, cssHeight);
 
-  // background
+  // Background
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, cssWidth, cssHeight);
 
-  const x = (cssWidth - image.width) / 2;
-  const y = (cssHeight - image.height) / 2;
+  const x = (cssWidth - cardWidth) / 2;
+  const y = (cssHeight - cardHeight) / 2;
   const radius = +imageRadiusEl.value;
 
-  // shadow (rounded)
+  /* SHADOW */
   ctx.save();
   ctx.shadowColor = "rgba(0,0,0,0.35)";
   ctx.shadowBlur = 40;
   ctx.shadowOffsetY = 20;
-
-  roundRect(ctx, x, y, image.width, image.height, radius);
+  roundRect(ctx, x, y, cardWidth, cardHeight, radius);
   ctx.fill();
   ctx.restore();
 
-  // image (perfectly clipped)
+  /* CARD */
   ctx.save();
-  roundRect(ctx, x, y, image.width, image.height, radius);
+  roundRect(ctx, x, y, cardWidth, cardHeight, radius);
   ctx.clip();
-  ctx.drawImage(image, x, y);
-  ctx.restore();
 
-  if (noiseToggle.checked) drawNoise(cssWidth, cssHeight);
-}
+  // Card background (important for clean corners)
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(x, y, cardWidth, cardHeight);
 
-function drawNoise(w, h) {
-  ctx.save();
-  ctx.globalCompositeOperation = "soft-light";
-  ctx.globalAlpha = 0.18;
-
-  for (let i = 0; i < w * h * 0.002; i++) {
-    const x = Math.random() * w;
-    const y = Math.random() * h;
-    const v = Math.random() * 255;
-    ctx.fillStyle = `rgb(${v},${v},${v})`;
-    ctx.fillRect(x, y, 1, 1);
-  }
+  // Image inside the card
+  ctx.drawImage(
+    image,
+    x + innerPadding,
+    y + innerPadding
+  );
 
   ctx.restore();
 }
