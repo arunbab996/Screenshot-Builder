@@ -1,55 +1,38 @@
 body {
   margin: 0;
   height: 100vh;
-  background: radial-gradient(circle at center, #1a0b12, #080306);
-  color: #3a0a1f;
-  overflow: hidden;
-  font-family: Inter, system-ui, sans-serif;
+  background: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: system-ui;
 }
 
 .preview {
-  position: absolute;
-  left: 0;
-  right: 420px;
-  top: 0;
-  bottom: 0;
+  flex: 1;
   display: flex;
-  align-items: center;
   justify-content: center;
 }
 
 canvas {
   max-width: 90%;
-  max-height: 85%;
+  max-height: 90%;
+}
+
+.dropzone {
+  position: absolute;
+  border: 1px dashed rgba(255,255,255,0.4);
+  border-radius: 12px;
+  padding: 24px 32px;
+  cursor: pointer;
+  color: white;
 }
 
 .panel {
-  position: absolute;
-  right: 80px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 320px;
-  padding: 22px;
-
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255, 220, 235, 0.75),
-      rgba(255, 200, 225, 0.65)
-    );
-
-  backdrop-filter: blur(30px) saturate(150%);
-  border-radius: 28px;
-
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,0.6),
-    0 20px 60px rgba(0,0,0,0.35);
-}
-
-.row { margin-bottom: 14px; font-size: 13px; }
-.row span { display: block; margin-bottom: 6px; }
-
-.actions {
-  display: flex;
-  gap: 10px;
+  width: 260px;
+  padding: 20px;
+  margin-right: 40px;
+  background: rgba(255, 200, 220, 0.7);
+  backdrop-filter: blur(30px);
+  border-radius: 24px;
 }
