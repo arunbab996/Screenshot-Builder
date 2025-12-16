@@ -3,51 +3,90 @@ const ctx = canvas.getContext("2d");
 
 const upload = document.getElementById("upload");
 const dropzone = document.getElementById("dropzone");
-
-const paddingEl = document.getElementById("padding");
-const radiusEl = document.getElementById("radius");
-const shadowEl = document.getElementById("shadow");
-const noiseEl = document.getElementById("noise");
 const bgPicker = document.getElementById("bgPicker");
+const noiseToggle = document.getElementById("noiseToggle");
 
-const colorButtons = document.querySelectorAll(".colors button[data-color]");
 const saveBtn = document.getElementById("save");
 const copyBtn = document.getElementById("copy");
+const resetBtn = document.getElementById("reset");
+
+const OPTIONS = {
+  proportions: ["Auto", "Square"],
+  browserTheme: ["None", "Bright", "Dark"],
+  padding: ["None", "Small", "Medium", "Large"],
+  rounding: ["None", "Small", "Medium", "Large"],
+  screenshotRounding: ["None", "Small", "Medium", "Large"],
+  shadows: ["None", "Little", "Medium", "A lot"],
+  position: [
+    "Central",
+    "Upper left corner",
+    "Upper right corner",
+    "Lower left corner",
+    "Lower right corner"
+  ]
+};
+
+let state = {
+  proportions: "Auto",
+  browserTheme: "None",
+  padding: "Large",
+  rounding: "Medium",
+  screenshotRounding: "Large",
+  shadows: "Little",
+  position: "Central",
+  noise: false
+};
 
 let image = null;
 let bgColor = "#ffffff";
 
-/* Upload */
+/* ---------- DROPDOWNS ---------- */
+document.querySelectorAll(".dropdown").forEach(el => {
+  const key = el.dataset.key;
+  const trigger = document.createElement("div");
+  trigger.className = "dropdown-trigger";
+  trigger.textContent = state[key];
+  el.appendChild(trigger);
+
+  trigger.onclick = () => {
+    closeMenus();
+    const menu = document.createElement("div");
+    menu.className = "dropdown-menu";
+
+    OPTIONS[key].forEach(opt => {
+      const item = document.createElement("div");
+      item.textContent = opt;
+      if (opt === state[key]) item.classList.add("active");
+
+      item.onclick = () => {
+        state[key] = opt;
+        trigger.textContent = opt;
+        render();
+        closeMenus();
+      };
+
+      menu.appendChild(item);
+    });
+
+    el.appendChild(menu);
+  };
+});
+
+function closeMenus() {
+  document.querySelectorAll(".dropdown-menu").forEach(m => m.remove());
+}
+
+window.addEventListener("click", e => {
+  if (!e.target.closest(".dropdown")) closeMenus();
+});
+
+/* ---------- UPLOAD ---------- */
 upload.addEventListener("change", e => loadImage(e.target.files[0]));
 
-/* Paste */
 window.addEventListener("paste", e => {
   const item = [...e.clipboardData.items].find(i => i.type.includes("image"));
   if (item) loadImage(item.getAsFile());
 });
-
-/* BG swatches */
-colorButtons.forEach(btn => {
-  btn.style.background = btn.dataset.color;
-  btn.onclick = () => {
-    bgColor = btn.dataset.color;
-    colorButtons.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    render();
-  };
-});
-
-/* Custom color */
-bgPicker.addEventListener("input", e => {
-  bgColor = e.target.value;
-  colorButtons.forEach(b => b.classList.remove("active"));
-  render();
-});
-
-/* Live updates */
-[paddingEl, radiusEl, shadowEl, noiseEl].forEach(el =>
-  el.addEventListener("input", render)
-);
 
 function loadImage(file) {
   if (!file) return;
@@ -60,13 +99,44 @@ function loadImage(file) {
   img.src = URL.createObjectURL(file);
 }
 
+/* ---------- COLORS ---------- */
+document.querySelectorAll(".colors button[data-color]").forEach(btn => {
+  btn.style.background = btn.dataset.color;
+  btn.onclick = () => {
+    bgColor = btn.dataset.color;
+    document.querySelectorAll(".colors button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    render();
+  };
+});
+
+bgPicker.oninput = e => {
+  bgColor = e.target.value;
+  render();
+};
+
+/* ---------- NOISE ---------- */
+noiseToggle.onchange = () => {
+  state.noise = noiseToggle.checked;
+  render();
+};
+
+/* ---------- RENDER ---------- */
 function render() {
   if (!image) return;
 
-  const padding = +paddingEl.value;
-  const radius = +radiusEl.value;
-  const shadow = +shadowEl.value;
-  const noise = +noiseEl.value;
+  const paddingMap = { None: 0, Small: 40, Medium: 80, Large: 140 };
+  const roundMap = { None: 0, Small: 8, Medium: 16, Large: 28 };
+  const shadowMap = {
+    None: 0,
+    Little: 20,
+    Medium: 40,
+    "A lot": 70
+  };
+
+  const padding = paddingMap[state.padding];
+  const radius = roundMap[state.screenshotRounding];
+  const shadow = shadowMap[state.shadows];
 
   canvas.width = image.width + padding * 2;
   canvas.height = image.height + padding * 2;
@@ -77,25 +147,24 @@ function render() {
   ctx.fillStyle = bgColor;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  /* Shadow */
-  ctx.save();
-  ctx.shadowColor = "rgba(0,0,0,0.4)";
-  ctx.shadowBlur = shadow;
-  ctx.shadowOffsetY = shadow / 2;
+  const x = padding;
+  const y = padding;
 
-  drawRoundedImage(
-    ctx,
-    image,
-    padding,
-    padding,
-    image.width,
-    image.height,
-    radius
-  );
-  ctx.restore();
+  /* SHADOW PASS */
+  if (shadow > 0) {
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,0.45)";
+    ctx.shadowBlur = shadow;
+    ctx.shadowOffsetY = shadow / 2;
+    ctx.drawImage(image, x, y);
+    ctx.restore();
+  }
 
-  /* Noise overlay */
-  if (noise > 0) drawNoise(noise);
+  /* IMAGE */
+  drawRoundedImage(ctx, image, x, y, image.width, image.height, radius);
+
+  /* NOISE */
+  if (state.noise) drawNoise();
 }
 
 function drawRoundedImage(ctx, img, x, y, w, h, r) {
@@ -108,25 +177,27 @@ function drawRoundedImage(ctx, img, x, y, w, h, r) {
   ctx.arcTo(x, y, x + w, y, r);
   ctx.closePath();
   ctx.clip();
-  ctx.drawImage(img, x, y, w, h);
+  ctx.drawImage(img, x, y);
   ctx.restore();
 }
 
-function drawNoise(amount) {
+function drawNoise() {
   ctx.save();
-  ctx.globalAlpha = 0.15;
-  for (let i = 0; i < amount * 200; i++) {
-    ctx.fillStyle = `rgba(0,0,0,${Math.random()})`;
-    ctx.fillRect(
-      Math.random() * canvas.width,
-      Math.random() * canvas.height,
-      1,
-      1
-    );
+  ctx.globalCompositeOperation = "overlay";
+  ctx.globalAlpha = 0.12;
+
+  for (let i = 0; i < canvas.width * canvas.height * 0.0015; i++) {
+    const x = Math.random() * canvas.width;
+    const y = Math.random() * canvas.height;
+    const v = Math.random() * 255;
+    ctx.fillStyle = `rgb(${v},${v},${v})`;
+    ctx.fillRect(x, y, 1, 1);
   }
+
   ctx.restore();
 }
 
+/* ---------- EXPORT ---------- */
 saveBtn.onclick = () => {
   const a = document.createElement("a");
   a.download = "screenshot.png";
@@ -138,3 +209,5 @@ copyBtn.onclick = async () => {
   const blob = await new Promise(r => canvas.toBlob(r));
   await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
 };
+
+resetBtn.onclick = () => location.reload();
