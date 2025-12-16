@@ -5,69 +5,120 @@
 
 body {
   margin: 0;
-  background: #020617;
-  color: #e5e7eb;
-}
-
-.app {
-  display: flex;
   height: 100vh;
+  overflow: hidden;
+  color: white;
 }
 
-.controls {
-  width: 300px;
+/* Ambient background */
+.background {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at top right, #831843, #020617 60%);
+  filter: blur(40px);
+  z-index: -1;
+}
+
+/* Dropzone */
+.dropzone {
+  position: absolute;
+  top: 50%;
+  left: 35%;
+  transform: translate(-50%, -50%);
+  border: 1px dashed rgba(255,255,255,0.25);
+  border-radius: 12px;
+  padding: 30px 40px;
+  text-align: center;
+  color: rgba(255,255,255,0.6);
+}
+
+.dropzone span {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.dropzone input {
+  display: none;
+}
+
+/* Control Panel */
+.panel {
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 260px;
   padding: 20px;
-  background: #020617;
-  border-right: 1px solid #1e293b;
+  background: linear-gradient(180deg, #9d174d, #831843);
+  border-radius: 16px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.4);
 }
 
-.controls h2 {
-  margin-bottom: 20px;
+.panel h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
 }
 
-.controls label {
+.row {
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.row span {
   display: block;
-  margin-top: 15px;
-  font-size: 14px;
+  margin-bottom: 6px;
+  opacity: 0.9;
 }
 
-.controls input[type="range"],
-.controls input[type="color"],
-.controls input[type="file"] {
+.row input[type="range"] {
   width: 100%;
-  margin-top: 6px;
+}
+
+.colors {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+}
+
+.colors button {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
 }
 
 .checkbox {
   display: flex;
   align-items: center;
-  gap: 8px;
 }
 
-button {
-  margin-top: 20px;
+.primary {
   width: 100%;
   padding: 10px;
-  background: #2563eb;
+  border-radius: 10px;
   border: none;
-  color: white;
-  border-radius: 6px;
+  background: #f472b6;
+  color: #020617;
+  font-weight: 600;
   cursor: pointer;
 }
 
-button:hover {
-  background: #1d4ed8;
+.primary:hover {
+  background: #f9a8d4;
 }
 
-.preview {
-  flex: 1;
+/* Canvas */
+.canvas-wrap {
+  position: absolute;
+  inset: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #020617;
+  pointer-events: none;
 }
 
 canvas {
-  max-width: 95%;
-  max-height: 95%;
+  max-width: 70%;
+  max-height: 80%;
 }
