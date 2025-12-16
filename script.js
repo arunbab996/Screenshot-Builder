@@ -8,10 +8,6 @@ const shadowStrengthEl = document.getElementById("shadowStrength");
 
 let image = null;
 
-// Offscreen canvas for TRUE image rounding
-const maskCanvas = document.createElement("canvas");
-const maskCtx = maskCanvas.getContext("2d");
-
 upload.addEventListener("change", e => loadImage(e.target.files[0]));
 window.addEventListener("paste", e => {
   const item = [...e.clipboardData.items].find(i => i.type.includes("image"));
@@ -43,7 +39,7 @@ function render() {
   const cssWidth = image.width + padding * 2;
   const cssHeight = image.height + padding * 2;
 
-  // DPR-safe canvas
+  // DPR-safe canvas setup
   canvas.style.width = cssWidth + "px";
   canvas.style.height = cssHeight + "px";
   canvas.width = cssWidth * dpr;
@@ -52,7 +48,7 @@ function render() {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.clearRect(0, 0, cssWidth, cssHeight);
 
-  // Background
+  // 1. Draw Background
   ctx.fillStyle = "#d9f99d";
   ctx.fillRect(0, 0, cssWidth, cssHeight);
 
@@ -60,45 +56,47 @@ function render() {
   const y = (cssHeight - image.height) / 2;
 
   /* -----------------------------
-     1️⃣ TRUE IMAGE ROUNDING
-     ----------------------------- */
-  maskCanvas.width = image.width;
-  maskCanvas.height = image.height;
-
-  maskCtx.clearRect(0, 0, image.width, image.height);
-  maskCtx.save();
-  roundRect(maskCtx, 0, 0, image.width, image.height, radius);
-  maskCtx.clip();
-  maskCtx.drawImage(image, 0, 0);
-  maskCtx.restore();
-
-  // Draw image FIRST
-  ctx.drawImage(maskCanvas, x, y);
-
-  /* -----------------------------
-     2️⃣ SHADOW BEHIND IMAGE (KEY FIX)
+     2. DRAW SHADOW (FIRST)
      ----------------------------- */
   if (shadow > 0) {
     ctx.save();
-    ctx.globalCompositeOperation = "destination-over";
     ctx.shadowColor = "rgba(0,0,0,0.35)";
     ctx.shadowBlur = shadow;
     ctx.shadowOffsetY = shadow * 0.5;
-
+    
+    // We draw a filled rect here to cast the shadow.
+    // The color doesn't matter much as the image will cover it,
+    // but matching the background or white prevents dark halos.
+    ctx.fillStyle = "white"; 
+    
+    // Use the exact same rounded path for the shadow
     roundRect(ctx, x, y, image.width, image.height, radius);
-    ctx.fillStyle = "rgba(0,0,0,0.01)";
     ctx.fill();
-
     ctx.restore();
   }
+
+  /* -----------------------------
+     3. DRAW IMAGE (SECOND - ON TOP)
+     ----------------------------- */
+  ctx.save();
+  // Create the clipping path again
+  roundRect(ctx, x, y, image.width, image.height, radius);
+  ctx.clip();
+  
+  // Draw the image inside the clip
+  ctx.drawImage(image, x, y, image.width, image.height);
+  ctx.restore();
 }
 
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
+  // Clamp radius to ensure it doesn't exceed image dimensions
+  const safeR = Math.min(r, w / 2, h / 2);
+  
+  ctx.moveTo(x + safeR, y);
+  ctx.arcTo(x + w, y, x + w, y + h, safeR);
+  ctx.arcTo(x + w, y + h, x, y + h, safeR);
+  ctx.arcTo(x, y + h, x, y, safeR);
+  ctx.arcTo(x, y, x + w, y, safeR);
   ctx.closePath();
 }
