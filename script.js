@@ -1,39 +1,30 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-const dropzone = document.getElementById("dropzone");
 const upload = document.getElementById("upload");
+const dropzone = document.getElementById("dropzone");
 
 const controls = {
   proportion: document.getElementById("proportion"),
-  browserTheme: document.getElementById("browserTheme"),
-  paddingPreset: document.getElementById("paddingPreset"),
-  outerRadius: document.getElementById("outerRadius"),
+  padding: document.getElementById("paddingPreset"),
   imageRadius: document.getElementById("imageRadius"),
   position: document.getElementById("position"),
-  shadowLevel: document.getElementById("shadowLevel"),
+  shadow: document.getElementById("shadowLevel"),
   noise: document.getElementById("noise")
 };
 
 const saveBtn = document.getElementById("save");
 const copyBtn = document.getElementById("copy");
-const resetBtn = document.getElementById("reset");
 const colorButtons = document.querySelectorAll(".colors button");
 
 let image = null;
-let bgColor = "#0f172a";
+let bgColor = "#020617";
 
 upload.addEventListener("change", e => loadImage(e.target.files[0]));
 
 window.addEventListener("paste", e => {
   const item = [...e.clipboardData.items].find(i => i.type.includes("image"));
   if (item) loadImage(item.getAsFile());
-});
-
-dropzone.addEventListener("dragover", e => e.preventDefault());
-dropzone.addEventListener("drop", e => {
-  e.preventDefault();
-  loadImage(e.dataTransfer.files[0]);
 });
 
 colorButtons.forEach(btn => {
@@ -62,10 +53,7 @@ function loadImage(file) {
 function render() {
   if (!image) return;
 
-  const padding = +controls.paddingPreset.value;
-  const outerR = +controls.outerRadius.value;
-  const imgR = +controls.imageRadius.value;
-
+  const padding = +controls.padding.value;
   let width = image.width + padding * 2;
   let height = image.height + padding * 2;
 
@@ -90,23 +78,28 @@ function render() {
       ? padding
       : (height - image.height) / 2;
 
-  drawRoundedImage(ctx, image, (width - image.width) / 2, y, image.width, image.height, imgR);
+  drawRoundedImage(
+    ctx,
+    image,
+    (width - image.width) / 2,
+    y,
+    image.width,
+    image.height,
+    +controls.imageRadius.value
+  );
 
   if (controls.noise.checked) drawNoise();
 }
 
 function applyShadow() {
-  const level = controls.shadowLevel.value;
-  if (level === "none") {
-    ctx.shadowColor = "transparent";
-    ctx.shadowBlur = 0;
-  }
-  if (level === "little") {
+  const level = controls.shadow.value;
+  if (level === "none") ctx.shadowBlur = 0;
+  if (level === "soft") {
     ctx.shadowColor = "rgba(0,0,0,0.35)";
     ctx.shadowBlur = 30;
-    ctx.shadowOffsetY = 20;
+    ctx.shadowOffsetY = 18;
   }
-  if (level === "heavy") {
+  if (level === "strong") {
     ctx.shadowColor = "rgba(0,0,0,0.5)";
     ctx.shadowBlur = 60;
     ctx.shadowOffsetY = 40;
@@ -130,11 +123,11 @@ function drawRoundedImage(ctx, img, x, y, w, h, r) {
 function drawNoise() {
   const imgData = ctx.createImageData(canvas.width, canvas.height);
   for (let i = 0; i < imgData.data.length; i += 4) {
-    const v = Math.random() * 20;
+    const v = Math.random() * 18;
     imgData.data[i] = v;
     imgData.data[i + 1] = v;
     imgData.data[i + 2] = v;
-    imgData.data[i + 3] = 30;
+    imgData.data[i + 3] = 22;
   }
   ctx.putImageData(imgData, 0, 0);
 }
@@ -150,5 +143,3 @@ copyBtn.onclick = async () => {
   const blob = await new Promise(r => canvas.toBlob(r));
   await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
 };
-
-resetBtn.onclick = () => location.reload();
