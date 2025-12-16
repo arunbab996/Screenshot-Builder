@@ -11,12 +11,8 @@ body {
   overflow: hidden;
 }
 
-.app {
-  position: relative;
-  height: 100%;
-}
+.app { position: relative; height: 100%; }
 
-/* PREVIEW */
 .preview {
   position: absolute;
   left: 0;
@@ -28,12 +24,8 @@ body {
   justify-content: center;
 }
 
-canvas {
-  max-width: 90%;
-  max-height: 85%;
-}
+canvas { max-width: 90%; max-height: 85%; }
 
-/* DROPZONE */
 .dropzone {
   position: absolute;
   border: 1px dashed rgba(255,255,255,0.3);
@@ -45,18 +37,6 @@ canvas {
 
 .dropzone input { display: none; }
 
-.dropzone p {
-  margin: 0;
-  font-size: 14px;
-  color: rgba(255,255,255,0.75);
-}
-
-.dropzone span {
-  font-size: 12px;
-  opacity: 0.6;
-}
-
-/* FLOATING PANEL */
 .panel {
   position: absolute;
   right: 80px;
@@ -80,22 +60,17 @@ canvas {
     0 0 60px rgba(255,20,147,0.45);
 }
 
-.row {
-  margin-bottom: 14px;
-  font-size: 13px;
+.row { margin-bottom: 14px; font-size: 13px; }
+.row span { display: block; margin-bottom: 6px; }
+
+.hint {
+  font-size: 11px;
+  opacity: 0.7;
+  margin-top: 2px;
 }
 
-.row span {
-  display: block;
-  margin-bottom: 6px;
-  opacity: 0.9;
-}
-
-/* DROPDOWN */
-.dropdown {
-  position: relative;
-}
-
+/* Dropdown */
+.dropdown { position: relative; }
 .dropdown-trigger {
   background: rgba(255,255,255,0.9);
   color: #2a0a16;
@@ -112,7 +87,6 @@ canvas {
   background: rgba(30,30,30,0.95);
   border-radius: 10px;
   padding: 6px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
   z-index: 20;
 }
 
@@ -122,15 +96,9 @@ canvas {
   cursor: pointer;
 }
 
-.dropdown-menu div:hover {
-  background: rgba(255,255,255,0.1);
-}
+.dropdown-menu .active { background: #2563eb; }
 
-.dropdown-menu .active {
-  background: #2563eb;
-}
-
-/* COLORS */
+/* Colors */
 .colors {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -145,14 +113,10 @@ canvas {
   cursor: pointer;
 }
 
-.colors .active {
-  outline: 2px solid white;
-}
+.colors .active { outline: 2px solid white; }
 
 .colors .rainbow {
-  background: linear-gradient(
-    45deg, red, orange, yellow, green, cyan, blue, violet
-  );
+  background: linear-gradient(45deg, red, orange, yellow, green, cyan, blue, violet);
   position: relative;
 }
 
@@ -162,7 +126,6 @@ canvas {
   opacity: 0;
 }
 
-/* ACTIONS */
 .actions {
   display: flex;
   gap: 10px;
@@ -178,26 +141,5 @@ canvas {
   cursor: pointer;
 }
 
-#copy {
-  background: #fbcfe8;
-  color: #2a0a16;
-}
-
-#save {
-  background: #f472b6;
-  color: #2a0a16;
-}
-
-.footer {
-  margin-top: 14px;
-  text-align: center;
-  font-size: 12px;
-  opacity: 0.7;
-}
-
-.footer button {
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-}
+#copy { background: #fbcfe8; color: #2a0a16; }
+#save { background: #f472b6; color: #2a0a16; }
