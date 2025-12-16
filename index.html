@@ -9,90 +9,87 @@
 
   <div class="background"></div>
 
-  <!-- Clickable Dropzone -->
-  <label class="dropzone" id="dropzone">
-    <input type="file" id="upload" accept="image/*" />
-    <p>
-      Paste your screenshot<br>
-      <span>Cmd / Ctrl + V</span><br>
-      or click to upload<br>
-      or drag & drop
-    </p>
-  </label>
+  <div class="layout">
 
-  <div class="canvas-wrap">
-    <canvas id="canvas"></canvas>
-  </div>
+    <!-- LEFT: Preview -->
+    <div class="preview-area">
+      <label class="dropzone" id="dropzone">
+        <input type="file" id="upload" accept="image/*" />
+        <p>
+          Paste your screenshot<br>
+          <span>Cmd / Ctrl + V</span><br>
+          or click to upload
+        </p>
+      </label>
 
-  <div class="panel">
-    <h3>Settings</h3>
-
-    <div class="row">
-      <label>Proportions</label>
-      <select id="proportion">
-        <option value="auto">Auto</option>
-        <option value="1">1:1</option>
-        <option value="16/9">16:9</option>
-      </select>
+      <canvas id="canvas"></canvas>
     </div>
 
-    <div class="row">
-      <label>Padding</label>
-      <select id="paddingPreset">
-        <option value="40">Small</option>
-        <option value="80" selected>Medium</option>
-        <option value="140">Large</option>
-      </select>
-    </div>
+    <!-- RIGHT: Controls -->
+    <div class="panel">
+      <h3>Settings</h3>
 
-    <div class="row">
-      <label>Background</label>
-      <div class="colors">
-        <button data-color="#0b1020"></button>
-        <button data-color="#111827"></button>
-        <button data-color="#1f2933"></button>
-        <button data-color="#020617"></button>
-        <button data-color="#ffffff"></button>
+      <div class="row">
+        <label>Proportions</label>
+        <select id="proportion">
+          <option value="auto">Auto</option>
+          <option value="1">1:1</option>
+          <option value="16/9">16:9</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label>Padding</label>
+        <input type="range" id="padding" min="0" max="200" value="80">
+      </div>
+
+      <div class="row">
+        <label>Background</label>
+        <div class="colors">
+          <button data-color="#020617"></button>
+          <button data-color="#0b1020"></button>
+          <button data-color="#111827"></button>
+          <button data-color="#1f2933"></button>
+          <button data-color="#312e81"></button>
+          <button data-color="#581c87"></button>
+          <button data-color="#831843"></button>
+          <button data-color="#0c4a6e"></button>
+          <button data-color="#ffffff"></button>
+          <button class="picker">
+            <input type="color" id="bgPicker">
+          </button>
+        </div>
+      </div>
+
+      <div class="row">
+        <label>Screenshot corners</label>
+        <input type="range" id="imageRadius" min="0" max="40" value="16">
+      </div>
+
+      <div class="row">
+        <label>Screenshot position</label>
+        <select id="position">
+          <option value="center">Center</option>
+          <option value="top">Top</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label>Shadow strength</label>
+        <input type="range" id="shadow" min="0" max="100" value="40">
+      </div>
+
+      <div class="row">
+        <label>Noise</label>
+        <input type="range" id="noise" min="0" max="30" value="0">
+      </div>
+
+      <div class="actions">
+        <button id="copy">Copy</button>
+        <button id="save" class="primary">Save</button>
       </div>
     </div>
 
-    <div class="row">
-      <label>Screenshot corners</label>
-      <select id="imageRadius">
-        <option value="0">None</option>
-        <option value="16" selected>Medium</option>
-        <option value="32">Large</option>
-      </select>
-    </div>
-
-    <div class="row">
-      <label>Screenshot position</label>
-      <select id="position">
-        <option value="center">Center</option>
-        <option value="top">Top</option>
-      </select>
-    </div>
-
-    <div class="row">
-      <label>Shadow</label>
-      <select id="shadowLevel">
-        <option value="none">None</option>
-        <option value="soft" selected>Soft</option>
-        <option value="strong">Strong</option>
-      </select>
-    </div>
-
-    <div class="row checkbox">
-      <label>
-        <input type="checkbox" id="noise" />
-        Subtle noise
-      </label>
-    </div>
-
-    <div class="actions">
-      <button id="copy">Copy</button>
-      <button id="save" class="primary">Save</button>
-    </div>
   </div>
 
   <script src="script.js"></script>
