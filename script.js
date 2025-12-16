@@ -4,10 +4,11 @@ const ctx = canvas.getContext("2d");
 const upload = document.getElementById("upload");
 const dropzone = document.getElementById("dropzone");
 const imageRadiusEl = document.getElementById("imageRadius");
+const shadowStrengthEl = document.getElementById("shadowStrength");
 
 let image = null;
 
-// Offscreen canvas for image masking
+// Offscreen canvas for true image rounding
 const maskCanvas = document.createElement("canvas");
 const maskCtx = maskCanvas.getContext("2d");
 
@@ -18,6 +19,7 @@ window.addEventListener("paste", e => {
 });
 
 imageRadiusEl.addEventListener("input", render);
+shadowStrengthEl.addEventListener("input", render);
 
 function loadImage(file) {
   if (!file) return;
@@ -33,14 +35,15 @@ function loadImage(file) {
 function render() {
   if (!image) return;
 
-  const padding = 140;
+  const padding = 160;
   const dpr = window.devicePixelRatio || 1;
   const radius = +imageRadiusEl.value;
+  const shadow = +shadowStrengthEl.value;
 
   const cssWidth = image.width + padding * 2;
   const cssHeight = image.height + padding * 2;
 
-  // DPR-aware canvas
+  // DPR-safe canvas
   canvas.style.width = cssWidth + "px";
   canvas.style.height = cssHeight + "px";
   canvas.width = cssWidth * dpr;
@@ -53,43 +56,41 @@ function render() {
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, cssWidth, cssHeight);
 
-  // --- OFFSCREEN IMAGE MASK (TRUE IMAGE ROUNDING) ---
+  const x = (cssWidth - image.width) / 2;
+  const y = (cssHeight - image.height) / 2;
+
+  /* -----------------------------
+     1️⃣ SHADOW FROM GEOMETRY
+     ----------------------------- */
+  if (shadow > 0) {
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,0.35)";
+    ctx.shadowBlur = shadow;
+    ctx.shadowOffsetY = shadow * 0.5;
+
+    roundRect(ctx, x, y, image.width, image.height, radius);
+    ctx.fillStyle = "rgba(0,0,0,0.01)"; // must be non-zero alpha
+    ctx.fill();
+    ctx.restore();
+  }
+
+  /* -----------------------------
+     2️⃣ TRUE IMAGE ROUNDING
+     ----------------------------- */
   maskCanvas.width = image.width;
   maskCanvas.height = image.height;
 
   maskCtx.clearRect(0, 0, maskCanvas.width, maskCanvas.height);
-
   maskCtx.save();
-  roundRect(
-    maskCtx,
-    0,
-    0,
-    image.width,
-    image.height,
-    radius
-  );
+  roundRect(maskCtx, 0, 0, image.width, image.height, radius);
   maskCtx.clip();
-
-  // Draw image INTO the rounded mask
   maskCtx.drawImage(image, 0, 0);
   maskCtx.restore();
 
-  const x = (cssWidth - image.width) / 2;
-  const y = (cssHeight - image.height) / 2;
-
-  // Shadow (applied to already-rounded image)
-  ctx.save();
-  ctx.shadowColor = "rgba(0,0,0,0.35)";
-  ctx.shadowBlur = 40;
-  ctx.shadowOffsetY = 20;
-  ctx.drawImage(maskCanvas, x, y);
-  ctx.restore();
-
-  // Final image
   ctx.drawImage(maskCanvas, x, y);
 }
 
-// Utility
+/* Utility */
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
   ctx.moveTo(x + r, y);
