@@ -16,6 +16,7 @@ body {
   height: 100%;
 }
 
+/* PREVIEW */
 .preview {
   position: absolute;
   left: 0;
@@ -32,6 +33,7 @@ canvas {
   max-height: 85%;
 }
 
+/* DROPZONE */
 .dropzone {
   position: absolute;
   border: 1px dashed rgba(255,255,255,0.3);
@@ -43,6 +45,7 @@ canvas {
 
 .dropzone input { display: none; }
 
+/* 🔥 FLOATING LIQUID GLASS PANEL (FIX #2) */
 .panel {
   position: absolute;
   right: 80px;
@@ -51,27 +54,33 @@ canvas {
   width: 320px;
   padding: 22px;
 
-  background: linear-gradient(
-    180deg,
-    rgba(194,24,91,0.92),
-    rgba(157,23,77,0.92)
-  );
+  /* true liquid glass */
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 105, 180, 0.18),
+      rgba(194, 24, 91, 0.22)
+    );
 
-  backdrop-filter: blur(24px) saturate(140%);
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+
   border-radius: 28px;
 
+  /* glass edge + glow */
   box-shadow:
-    0 0 0 1px rgba(255,255,255,0.12),
+    inset 0 0 0 1px rgba(255,255,255,0.25),
     0 30px 80px rgba(0,0,0,0.55),
-    0 0 60px rgba(255,20,147,0.45);
+    0 0 70px rgba(255, 20, 147, 0.35);
 }
 
+/* CONTROLS */
 .row { margin-bottom: 14px; font-size: 13px; }
 .row span { display: block; margin-bottom: 6px; }
-
 .hint { font-size: 11px; opacity: 0.7; }
 
 .dropdown { position: relative; }
+
 .dropdown-trigger {
   background: rgba(255,255,255,0.9);
   color: #2a0a16;
@@ -98,6 +107,7 @@ canvas {
 
 .dropdown-menu .active { background: #2563eb; }
 
+/* COLORS */
 .colors {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -125,6 +135,7 @@ canvas {
   opacity: 0;
 }
 
+/* ACTIONS */
 .actions {
   display: flex;
   gap: 10px;
