@@ -107,7 +107,7 @@ function render() {
   if (!image) return;
 
   const paddingMap = { None: 0, Small: 40, Medium: 80, Large: 140 };
-  const shadowMap = { None: 0, Little: 20, Medium: 40, "A lot": 70 };
+  const shadowMap = { None: 0, Little: 18, Medium: 36, "A lot": 60 };
 
   const padding = paddingMap[state.padding];
   const shadow = shadowMap[state.shadows];
@@ -140,13 +140,22 @@ function render() {
   const imgX = (w - image.width) / 2;
   const imgY = (h - image.height - chromeH) / 2;
 
-  /* SHADOW */
+  /* SHADOW — MATCHES ROUNDED SHAPE */
   if (shadow > 0) {
     ctx.save();
     ctx.shadowColor = "rgba(0,0,0,0.45)";
     ctx.shadowBlur = shadow;
     ctx.shadowOffsetY = shadow / 2;
-    ctx.fillRect(imgX, imgY, image.width, image.height + chromeH);
+
+    roundRect(
+      ctx,
+      imgX,
+      imgY,
+      image.width,
+      image.height + chromeH,
+      +imageRadiusEl.value
+    );
+    ctx.fill();
     ctx.restore();
   }
 
@@ -155,11 +164,9 @@ function render() {
   roundRect(ctx, imgX, imgY, image.width, image.height + chromeH, +imageRadiusEl.value);
   ctx.clip();
 
-  /* 🔥 FIX #1: fill container */
   ctx.fillStyle = state.browserTheme === "Dark" ? "#1f1f1f" : "#f3f4f6";
   ctx.fillRect(imgX, imgY, image.width, image.height + chromeH);
 
-  /* BROWSER BAR */
   if (chromeH > 0) {
     ctx.fillStyle = state.browserTheme === "Dark" ? "#1f1f1f" : "#f3f4f6";
     ctx.fillRect(imgX, imgY, image.width, chromeH);
