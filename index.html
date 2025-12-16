@@ -9,7 +9,7 @@
 
 <div class="app">
 
-  <!-- LEFT: Preview -->
+  <!-- PREVIEW AREA -->
   <div class="preview">
     <label class="dropzone" id="dropzone">
       <input type="file" id="upload" accept="image/*" />
@@ -19,20 +19,28 @@
         or click to upload
       </p>
     </label>
-
     <canvas id="canvas"></canvas>
   </div>
 
-  <!-- RIGHT: Control Panel -->
+  <!-- FLOATING CONTROL ISLAND -->
   <div class="panel">
-    <h3>Settings</h3>
 
-    <div class="control">
-      <span>Padding</span>
-      <input type="range" id="padding" min="0" max="200" value="80">
+    <div class="row">
+      <span>Proportions</span>
+      <div class="dropdown" data-key="proportions"></div>
     </div>
 
-    <div class="control">
+    <div class="row">
+      <span>Browser Theme</span>
+      <div class="dropdown" data-key="browserTheme"></div>
+    </div>
+
+    <div class="row">
+      <span>Padding</span>
+      <div class="dropdown" data-key="padding"></div>
+    </div>
+
+    <div class="row">
       <span>Background</span>
       <div class="colors">
         <button data-color="#ffd6c9"></button>
@@ -48,32 +56,47 @@
         <button data-color="#ffffff" class="active"></button>
         <button data-color="#000000"></button>
 
-        <!-- Rainbow picker -->
         <button class="rainbow">
           <input type="color" id="bgPicker">
         </button>
       </div>
     </div>
 
-    <div class="control">
-      <span>Screenshot corners</span>
-      <input type="range" id="radius" min="0" max="40" value="16">
+    <div class="row">
+      <span>Rounding of the corners</span>
+      <div class="dropdown" data-key="rounding"></div>
     </div>
 
-    <div class="control">
-      <span>Shadow strength</span>
-      <input type="range" id="shadow" min="0" max="80" value="25">
+    <div class="row">
+      <span>Rounding of the screenshot corners</span>
+      <div class="dropdown" data-key="screenshotRounding"></div>
     </div>
 
-    <div class="control">
+    <div class="row">
+      <span>Screenshot position</span>
+      <div class="dropdown" data-key="position"></div>
+    </div>
+
+    <div class="row">
+      <span>Shadows</span>
+      <div class="dropdown" data-key="shadows"></div>
+    </div>
+
+    <div class="row noise-row">
       <span>Noise</span>
-      <input type="range" id="noise" min="0" max="40" value="0">
+      <input type="checkbox" id="noiseToggle">
     </div>
 
     <div class="actions">
       <button id="copy">Copy</button>
       <button id="save">Save</button>
     </div>
+
+    <div class="footer">
+      <button id="reset">Reset</button>
+      <p>Use <kbd>Cmd/Ctrl+C</kbd> to copy<br><kbd>Cmd/Ctrl+S</kbd> to save</p>
+    </div>
+
   </div>
 
 </div>
