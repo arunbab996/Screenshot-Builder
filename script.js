@@ -6,27 +6,31 @@ const dropzone = document.getElementById("dropzone");
 
 const controls = {
   proportion: document.getElementById("proportion"),
-  padding: document.getElementById("paddingPreset"),
+  padding: document.getElementById("padding"),
   imageRadius: document.getElementById("imageRadius"),
   position: document.getElementById("position"),
-  shadow: document.getElementById("shadowLevel"),
-  noise: document.getElementById("noise")
+  shadow: document.getElementById("shadow"),
+  noise: document.getElementById("noise"),
+  bgPicker: document.getElementById("bgPicker")
 };
 
 const saveBtn = document.getElementById("save");
 const copyBtn = document.getElementById("copy");
-const colorButtons = document.querySelectorAll(".colors button");
+const colorButtons = document.querySelectorAll(".colors button[data-color]");
 
 let image = null;
 let bgColor = "#020617";
 
+/* Upload */
 upload.addEventListener("change", e => loadImage(e.target.files[0]));
 
+/* Paste */
 window.addEventListener("paste", e => {
   const item = [...e.clipboardData.items].find(i => i.type.includes("image"));
   if (item) loadImage(item.getAsFile());
 });
 
+/* BG Colors */
 colorButtons.forEach(btn => {
   btn.style.background = btn.dataset.color;
   btn.onclick = () => {
@@ -35,8 +39,14 @@ colorButtons.forEach(btn => {
   };
 });
 
+controls.bgPicker.addEventListener("input", e => {
+  bgColor = e.target.value;
+  render();
+});
+
+/* Live updates */
 Object.values(controls).forEach(el =>
-  el.addEventListener("change", render)
+  el.addEventListener("input", render)
 );
 
 function loadImage(file) {
@@ -88,22 +98,14 @@ function render() {
     +controls.imageRadius.value
   );
 
-  if (controls.noise.checked) drawNoise();
+  if (+controls.noise.value > 0) drawNoise(+controls.noise.value);
 }
 
 function applyShadow() {
-  const level = controls.shadow.value;
-  if (level === "none") ctx.shadowBlur = 0;
-  if (level === "soft") {
-    ctx.shadowColor = "rgba(0,0,0,0.35)";
-    ctx.shadowBlur = 30;
-    ctx.shadowOffsetY = 18;
-  }
-  if (level === "strong") {
-    ctx.shadowColor = "rgba(0,0,0,0.5)";
-    ctx.shadowBlur = 60;
-    ctx.shadowOffsetY = 40;
-  }
+  const s = +controls.shadow.value;
+  ctx.shadowColor = "rgba(0,0,0,0.35)";
+  ctx.shadowBlur = s;
+  ctx.shadowOffsetY = s / 2;
 }
 
 function drawRoundedImage(ctx, img, x, y, w, h, r) {
@@ -120,14 +122,14 @@ function drawRoundedImage(ctx, img, x, y, w, h, r) {
   ctx.restore();
 }
 
-function drawNoise() {
+function drawNoise(amount) {
   const imgData = ctx.createImageData(canvas.width, canvas.height);
   for (let i = 0; i < imgData.data.length; i += 4) {
-    const v = Math.random() * 18;
+    const v = Math.random() * amount;
     imgData.data[i] = v;
     imgData.data[i + 1] = v;
     imgData.data[i + 2] = v;
-    imgData.data[i + 3] = 22;
+    imgData.data[i + 3] = 20;
   }
   ctx.putImageData(imgData, 0, 0);
 }
