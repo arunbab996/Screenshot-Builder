@@ -1,23 +1,27 @@
 * {
   box-sizing: border-box;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: Inter, system-ui, sans-serif;
 }
 
 body {
   margin: 0;
   height: 100vh;
-  background: #0b0508;
+  background: radial-gradient(circle at center, #1a0b12, #080306);
   color: white;
+  overflow: hidden;
 }
 
-.layout {
-  display: flex;
+.app {
+  position: relative;
   height: 100%;
 }
 
 .preview {
-  flex: 1;
-  position: relative;
+  position: absolute;
+  left: 0;
+  right: 420px;
+  top: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -25,47 +29,116 @@ body {
 
 canvas {
   max-width: 90%;
-  max-height: 90%;
+  max-height: 85%;
 }
 
 .dropzone {
   position: absolute;
-  border: 1px dashed rgba(255,255,255,0.4);
-  border-radius: 12px;
-  padding: 24px 32px;
+  border: 1px dashed rgba(255,255,255,0.3);
+  border-radius: 14px;
+  padding: 26px 36px;
   cursor: pointer;
   text-align: center;
 }
 
-.dropzone input {
-  display: none;
+.dropzone input { display: none; }
+
+.panel {
+  position: absolute;
+  right: 80px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 320px;
+  padding: 22px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(194,24,91,0.92),
+    rgba(157,23,77,0.92)
+  );
+
+  backdrop-filter: blur(24px) saturate(140%);
+  border-radius: 28px;
+
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.12),
+    0 30px 80px rgba(0,0,0,0.55),
+    0 0 60px rgba(255,20,147,0.45);
 }
 
-.dropzone p {
-  margin: 0;
-  font-size: 14px;
-  opacity: 0.8;
+.row { margin-bottom: 14px; font-size: 13px; }
+.row span { display: block; margin-bottom: 6px; }
+
+.hint { font-size: 11px; opacity: 0.7; }
+
+.dropdown { position: relative; }
+.dropdown-trigger {
+  background: rgba(255,255,255,0.9);
+  color: #2a0a16;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
-.controls {
-  width: 260px;
-  padding: 20px;
-  background: #1a0b12;
-  border-left: 1px solid rgba(255,255,255,0.1);
+.dropdown-menu {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  background: rgba(30,30,30,0.95);
+  border-radius: 10px;
+  padding: 6px;
+  z-index: 20;
 }
 
-.controls h3 {
-  margin-top: 0;
+.dropdown-menu div {
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
-.controls label {
-  display: block;
-  margin-bottom: 14px;
-  font-size: 13px;
+.dropdown-menu .active { background: #2563eb; }
+
+.colors {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
 }
 
-.controls input,
-.controls select {
+.colors button {
   width: 100%;
-  margin-top: 6px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
 }
+
+.colors .active { outline: 2px solid white; }
+
+.colors .rainbow {
+  background: linear-gradient(45deg, red, orange, yellow, green, cyan, blue, violet);
+  position: relative;
+}
+
+.colors .rainbow input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.actions button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#copy { background: #fbcfe8; color: #2a0a16; }
+#save { background: #f472b6; color: #2a0a16; }
