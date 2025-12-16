@@ -7,13 +7,20 @@ const imageRadiusEl = document.getElementById("imageRadius");
 
 let image = null;
 
+// Offscreen canvas for image masking
+const maskCanvas = document.createElement("canvas");
+const maskCtx = maskCanvas.getContext("2d");
+
 upload.addEventListener("change", e => loadImage(e.target.files[0]));
 window.addEventListener("paste", e => {
   const item = [...e.clipboardData.items].find(i => i.type.includes("image"));
   if (item) loadImage(item.getAsFile());
 });
 
+imageRadiusEl.addEventListener("input", render);
+
 function loadImage(file) {
+  if (!file) return;
   const img = new Image();
   img.onload = () => {
     image = img;
@@ -23,21 +30,17 @@ function loadImage(file) {
   img.src = URL.createObjectURL(file);
 }
 
-imageRadiusEl.addEventListener("input", render);
-
 function render() {
   if (!image) return;
 
-  const padding = 140;          // outer canvas padding
-  const innerPadding = 12;      // 🔥 THIS IS THE FIX
+  const padding = 140;
   const dpr = window.devicePixelRatio || 1;
+  const radius = +imageRadiusEl.value;
 
-  const cardWidth = image.width + innerPadding * 2;
-  const cardHeight = image.height + innerPadding * 2;
+  const cssWidth = image.width + padding * 2;
+  const cssHeight = image.height + padding * 2;
 
-  const cssWidth = cardWidth + padding * 2;
-  const cssHeight = cardHeight + padding * 2;
-
+  // DPR-aware canvas
   canvas.style.width = cssWidth + "px";
   canvas.style.height = cssHeight + "px";
   canvas.width = cssWidth * dpr;
@@ -50,38 +53,43 @@ function render() {
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, cssWidth, cssHeight);
 
-  const x = (cssWidth - cardWidth) / 2;
-  const y = (cssHeight - cardHeight) / 2;
-  const radius = +imageRadiusEl.value;
+  // --- OFFSCREEN IMAGE MASK (TRUE IMAGE ROUNDING) ---
+  maskCanvas.width = image.width;
+  maskCanvas.height = image.height;
 
-  /* SHADOW */
+  maskCtx.clearRect(0, 0, maskCanvas.width, maskCanvas.height);
+
+  maskCtx.save();
+  roundRect(
+    maskCtx,
+    0,
+    0,
+    image.width,
+    image.height,
+    radius
+  );
+  maskCtx.clip();
+
+  // Draw image INTO the rounded mask
+  maskCtx.drawImage(image, 0, 0);
+  maskCtx.restore();
+
+  const x = (cssWidth - image.width) / 2;
+  const y = (cssHeight - image.height) / 2;
+
+  // Shadow (applied to already-rounded image)
   ctx.save();
   ctx.shadowColor = "rgba(0,0,0,0.35)";
   ctx.shadowBlur = 40;
   ctx.shadowOffsetY = 20;
-  roundRect(ctx, x, y, cardWidth, cardHeight, radius);
-  ctx.fill();
+  ctx.drawImage(maskCanvas, x, y);
   ctx.restore();
 
-  /* CARD */
-  ctx.save();
-  roundRect(ctx, x, y, cardWidth, cardHeight, radius);
-  ctx.clip();
-
-  // Card background (important for clean corners)
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(x, y, cardWidth, cardHeight);
-
-  // Image inside the card
-  ctx.drawImage(
-    image,
-    x + innerPadding,
-    y + innerPadding
-  );
-
-  ctx.restore();
+  // Final image
+  ctx.drawImage(maskCanvas, x, y);
 }
 
+// Utility
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
   ctx.moveTo(x + r, y);
